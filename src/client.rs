@@ -678,6 +678,9 @@ impl<S: Read + Write> Proto for Client<S> {
 
     fn read_pair(&mut self) -> Result<(String, String)> {
         let line = self.read_line()?;
+        if line.starts_with("ACK") {
+            "".split(": ").next().ok_or(ParseError::BadPair)?;
+        }
         let mut split = line.split(": ");
         let key = split.next().ok_or(ParseError::BadPair)?;
         let val = split.next().ok_or(ParseError::BadPair)?;
